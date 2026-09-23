@@ -1,1 +1,2 @@
-* text=auto eol=lf
+# Consumed verbatim by DeepSeek Harness: never translate line endings.
+* -text
