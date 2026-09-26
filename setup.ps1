@@ -12,7 +12,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$bundleName = 'dsh-p2a-preset'
+$bundleName = 'p2a-preset'
 $bundleDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 if (-not $ProfileDir) {
@@ -46,7 +46,22 @@ if ($rebuilds.Count -eq 0) {
   }
 }
 
-# ---- 2) 写入 profile 清单 ----
+# ---- 2) 安装随 bundle 分发的宿主插件 ----
+# 预设声明里的插件行按包名解析，所以插件必须进 profile 的 node_modules。
+$pluginRoot = Join-Path $bundleDir 'presets\p2a\plugins'
+$plugins = @()
+if (Test-Path $pluginRoot) {
+  $plugins = Get-ChildItem -Directory $pluginRoot | Where-Object { Test-Path (Join-Path $_.FullName 'package.json') }
+}
+if ($plugins.Count -eq 0) {
+  Write-Host '插件    : 无需安装'
+} else {
+  foreach ($plugin in $plugins) {
+    Write-Host "插件    : $($plugin.Name) -> $($plugin.FullName)"
+  }
+}
+
+# ---- 3) 写入 profile 清单 ----
 $manifestPath = Join-Path $ProfileDir 'package.json'
 if (-not (Test-Path $manifestPath)) { throw "找不到 profile 清单：$manifestPath" }
 Copy-Item $manifestPath "$manifestPath.bak-$(Get-Date -Format 'yyyyMMdd-HHmmss')" -Force
@@ -56,6 +71,10 @@ if (-not $manifest.dependencies) {
   $manifest | Add-Member -NotePropertyName dependencies -NotePropertyValue ([pscustomobject]@{}) -Force
 }
 $manifest.dependencies | Add-Member -NotePropertyName $bundleName -NotePropertyValue "link:./local-bundles/$bundleName" -Force
+foreach ($plugin in $plugins) {
+  $uri = 'file:' + ($plugin.FullName -replace '\\', '/')
+  $manifest.dependencies | Add-Member -NotePropertyName $plugin.Name -NotePropertyValue $uri -Force
+}
 
 if (-not $manifest.dsh) { $manifest | Add-Member -NotePropertyName dsh -NotePropertyValue ([pscustomobject]@{}) -Force }
 if (-not $manifest.dsh.profile) { $manifest.dsh | Add-Member -NotePropertyName profile -NotePropertyValue ([pscustomobject]@{}) -Force }
@@ -66,5 +85,21 @@ $manifest.dsh.profile | Add-Member -NotePropertyName bundles -NotePropertyValue 
 
 $manifest | ConvertTo-Json -Depth 100 | Set-Content $manifestPath -Encoding UTF8
 Write-Host "清单已写入: $manifestPath"
+
+# ---- 4) 让 profile 的 node_modules 生效 ----
+if ($plugins.Count -gt 0) {
+  Write-Host ''
+  Write-Host '正在安装插件依赖（在 profile 目录执行 pnpm install）…'
+  Push-Location $ProfileDir
+  try {
+    & pnpm install
+    if ($LASTEXITCODE -ne 0) {
+      Write-Warning "pnpm install 返回 $LASTEXITCODE；请在 $ProfileDir 手动执行 pnpm install"
+    }
+  } catch {
+    Write-Warning "pnpm 不可用（$_）；请在 $ProfileDir 手动执行 pnpm install"
+  } finally { Pop-Location }
+}
+
 Write-Host ''
 Write-Host '完成。重启 DSH 后，新建会话即可选择该预设。'

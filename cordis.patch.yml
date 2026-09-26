@@ -1,4 +1,4 @@
-# 由 make-desktop-bundle.mjs 生成（来源：G:\dsh\_staging\preset-root\p2a）。
+# 由 make-desktop-bundle.mjs 生成（来源：G:\dsh\_staging\preset-root）。
 # 自包含：预设自带资源在 presets/<id>/ 下，行内 baseUrl 引用已重定位到 bundle 内，
 # 因此整个 bundle 可放在任意路径、任意机器上，无需安装期改写绝对路径。
 # 依赖产物（node_modules）不随仓库分发，安装后按 dsh.install 重建。

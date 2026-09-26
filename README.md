@@ -3,7 +3,7 @@
 DeepSeek Harness 的 **文献转Agent模式** 预设，打包为可移植的 desktop bundle：克隆到本机后即可在 DSH 桌面版 / Web 版里选用。
 
 - 预设 id：`p2a`
-- bundle 名：`dsh-p2a-preset`
+- bundle 名：`p2a-preset`
 - 自带资源：`presets/p2a/`（技能与工具源码）
 
 ## 这个 bundle 为什么可移植
@@ -16,10 +16,10 @@ DeepSeek Harness 的 **文献转Agent模式** 预设，打包为可移植的 des
 
 ```powershell
 # 1) 克隆到 desktop profile 的 local-bundles（目录名即 bundle 名）
-git clone <本仓库地址> "$env:USERPROFILE\.dsh\profiles\desktop\local-bundles\dsh-p2a-preset"
+git clone <本仓库地址> "$env:USERPROFILE\.dsh\profiles\desktop\local-bundles\p2a-preset"
 
 # 2) 重建依赖并写入 profile 清单
-powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.dsh\profiles\desktop\local-bundles\dsh-p2a-preset\setup.ps1"
+powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.dsh\profiles\desktop\local-bundles\p2a-preset\setup.ps1"
 ```
 
 改完重启 DSH（桌面版退出重开，Web 版重启 `dsh web`），新建会话时即可在预设列表里选到「文献转Agent模式」。
@@ -33,20 +33,20 @@ powershell -ExecutionPolicy Bypass -File "$env:USERPROFILE\.dsh\profiles\desktop
 ## 手工安装（不使用 setup.ps1）
 
 ```powershell
-$bundle = "$env:USERPROFILE\.dsh\profiles\desktop\local-bundles\dsh-p2a-preset"
+$bundle = "$env:USERPROFILE\.dsh\profiles\desktop\local-bundles\p2a-preset"
 
 # 重建依赖
 # （本预设无需重建依赖）
 
 # 编辑 $env:USERPROFILE\.dsh\profiles\desktop\package.json：
-#   dependencies 里加  "dsh-p2a-preset": "link:./local-bundles/dsh-p2a-preset"
-#   dsh.profile.bundles 里加  "dsh-p2a-preset"
+#   dependencies 里加  "p2a-preset": "link:./local-bundles/p2a-preset"
+#   dsh.profile.bundles 里加  "p2a-preset"
 ```
 
 ## 目录结构
 
 ```
-dsh-p2a-preset/
+p2a-preset/
 ├── cordis.patch.yml     # 预设声明（一行 @deepseek-ai/dsh-agent-preset，内联 composition）
 ├── package.json         # dsh.bundle.patch 指向上面的 patch；dsh.install 列出待重建依赖
 ├── lib/index.js         # bundle 入口（空模块，仅满足包约定）
