@@ -5,6 +5,7 @@ DeepSeek Harness 的 **文献转Agent模式** 预设，打包为可移植的 des
 - 预设 id：`p2a`
 - bundle 名：`p2a-preset`
 - 自带资源：`presets/p2a/`（技能与工具源码）
+- 版本兼容：composition 已对齐 **DSH 0.2.2-rc.1**（2026-11-06）：新增 `time-context` / `tool-schedule` / `command-goal` 行、`tool-fs.applyPatch: false`、子代理改用 `modelSelection` + `modelDiscovery`（旧键 `modelSelectionSettings` / `backgroundMode` 已删除）、plan-mode 文案对齐内置预设、`tool-web` 开启 fetch；**删除 `tool-subagent-control/list-agents` 行**——0.2.2 移除了该子路径导出，`list_agents` 改由 `tool-subagent-control` 主插件一并注册。
 
 ## 这个 bundle 为什么可移植
 

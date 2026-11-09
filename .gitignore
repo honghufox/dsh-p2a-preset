@@ -4,3 +4,7 @@ Thumbs.db
 *.log
 __pycache__/
 *.pyc
+# 依赖锁不随仓库分发（克隆后按 setup.ps1 重建）
+package-lock.json
+# 迁移前备份
+*.bak-*
